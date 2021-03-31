@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .container {
+            display: none;
+        }
+
+        .wraper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 1em;
+            padding: 20px;
+            background: royalblue;
+        }
+
+        .slider {
+            position: relative;
+            overflow: hidden;
+            max-width: 500px;
+            min-height: 3em;
+            margin: 0 auto;
+        }
+
+        .item {
+            position: absolute;
+            min-width: 500px;
+            background: white;
+            padding: 5px;
+            color: orange;
+            font-size: 2em;
+            font-weight: bolder;
+            text-align: center;
+            border-left: 10px solid royalblue;
+            border-right: 10px solid royalblue;
+        }
+
+        .np-btn {
+            position: absolute;
+            z-index: 5;
+            top: 35%;
+            -webkit-transform: translate(0, -50%);
+            -ms-transform: translate(0, -50%);
+            transform: translate(0, -50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, .8);
+            font-size: 1.7em;
+        }
+
+        .np-btn:hover {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 1);
+            font-size: 1.9em;
+        }
+
+        .btn-next {
+            right: .5em;
+        }
+
+        .btn-prev {
+            left: .5em;
+        }
+
+        .points {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .point {
+            box-sizing: content-box;
+            padding: 5px;
+            background: rgba(0, 0, 0, .2);
+            border-radius: 50%;
+            cursor: pointer;
+            border: solid 5px royalblue;
+        }
+
+        .point:hover {
+            padding: 8px;
+            border: solid 2px royalblue;
+        }
+
+        .active-point {
+            background: rgba(255, 255, 255, .8);
+        }
+    </style>
+    <div class="container">
+
+    </div>
+    <div class="wraper">
+        <div class="slider">
+            <div class="item">
+                1
+            </div>
+            <div class="item">
+                2
+            </div>
+            <div class="item">
+                3
+            </div>
+            <div class="item">
+                4
+            </div>
+            <div class="item">
+                5
+            </div>
+            <div class="item">
+                6
+            </div>
+            <div class="item">
+                7
+            </div>
+            <div class="item">
+                8
+            </div>
+            <div class="item">
+                9
+            </div>
+            <div class="item">
+                10
+            </div>
+            <div class="item">
+                11
+            </div>
+        </div>
+        <div class="points">
+
+        </div>
+        <div class="btn-prev np-btn fa fa-chevron-circle-left"></div>
+        <div class="btn-next np-btn fa fa-chevron-circle-right"></div>
+    </div>
+
+    <script type="text/javascript">
+        let actIt = 3
+        const items = document.querySelectorAll('.item')
+        const btnNext = document.querySelector('.btn-next')
+        const btnPrev = document.querySelector('.btn-prev')
+        const pos = 500
+        const pointStep = 100
+        const pointStepInterval = 50
+        //
+        // Перемещаем активный итем наверх
+        items[actIt].style.zIndex = items.length
+
+
+
+        const disableBtnsClick = () => {
+            btnNext.onclick = null
+            btnPrev.onclick = null
+        }
+
+        const btnMovNext = () => {
+            document.querySelectorAll('.point').forEach((el) => { el.classList.remove('active-point') })
+            let point = (actIt === (items.length - 1)) ? 0 : (actIt + 1)
+            let seeItems = []
+            seeItems.push(items[actIt])
+            seeItems.push(items[point])
+            const next = () => {
+                seeItems[0].style.left = '0px'
+                seeItems[0].style.zIndex = items.length
+                seeItems[1].style.left = '500px'
+                seeItems[1].style.zIndex = items.length
+                let thisId = setInterval(() => {
+                    disableBtnsClick()
+                    let position = parseInt(seeItems[1].style.left, 10)
+                    let step = 25
+                    if (position > 0) {
+                        seeItems[0].style.left = (parseInt(seeItems[0].style.left) - step) + 'px'
+                        seeItems[1].style.left = (parseInt(seeItems[1].style.left) - step) + 'px'
+                    } else {
+                        seeItems[0].style.zIndex = 0
+                        seeItems[0].style.left = 0
+                        clearInterval(thisId)
+                        enableBtnsClick()
+                    }
+                }, 30)
+            }
+            next()
+            actIt = point
+            document.querySelectorAll('.point')[actIt].classList.add('active-point')
+            enableBtnsClick()
+        }
+
+        const btnMovPrev = () => {
+            document.querySelectorAll('.point').forEach((el) => { el.classList.remove('active-point') })
+            let point = (actIt === 0) ? (items.length - 1) : (actIt - 1)
+            let seeItems = []
+            seeItems.push(items[point])
+            seeItems.push(items[actIt])
+            const prev = () => {
+                seeItems[0].style.left = '-500px'
+                seeItems[0].style.zIndex = items.length
+                seeItems[1].style.left = '0px'
+                seeItems[1].style.zIndex = items.length
+                let thisId = setInterval(() => {
+                    disableBtnsClick()
+                    let position = parseInt(seeItems[0].style.left, 10)
+                    let step = 25
+                    if (position < 0) {
+                        seeItems[0].style.left = (parseInt(seeItems[0].style.left) + step) + 'px'
+                        seeItems[1].style.left = (parseInt(seeItems[1].style.left) + step) + 'px'
+                    } else {
+                        seeItems[1].style.zIndex = 0
+                        seeItems[1].style.left = 0
+                        clearInterval(thisId)
+                        enableBtnsClick()
+                    }
+                }, 30)
+            }
+            prev()
+            actIt = point
+            document.querySelectorAll('.point')[actIt].classList.add('active-point')
+            enableBtnsClick()
+        }
+
+        const enableBtnsClick = () => {
+            btnNext.onclick = btnMovNext
+            btnPrev.onclick = btnMovPrev
+        }
+        enableBtnsClick()
+
+        // Добавление поинтеров
+        const addPointers = () => {
+            const dots = document.querySelector('.points')
+            let i = 0
+
+            while (i < items.length) {
+                let pointDiv = document.createElement("div")
+                dots.appendChild(pointDiv)
+                pointDiv.classList.add('point')
+                pointDiv.dataKey = i
+                pointDiv.addEventListener('click', () => {
+                    pointMov(pointDiv.dataKey)
+                })
+                i++
+            }
+            const points = document.querySelectorAll('.point')
+        }
+        addPointers()
+
+        function movNext(point) {
+            // Массив элементов нужных на первом плане
+            let seeItems = []
+            let colich = point - actIt
+            for (let i = 0; i <= colich; i++) seeItems.push(items[actIt + i]) //собираем массив
+            //определяем начальный сдвиг для всех элементов и z-index
+            for (let i = 0; i < seeItems.length; i++) {
+                seeItems[i].style.left = pos * i + 'px'
+                seeItems[i].style.zIndex = items.length
+            }
+
+            let itId = setInterval(() => {
+                let checkPosition = parseInt(seeItems[seeItems.length - 1].style.left, 10)
+                // Если сдвиг крайнего не 0 - двигаем всех, иначе чистим тайер анимации
+                if (checkPosition > 0) {
+                    for (let i = 0; i < seeItems.length; i++) {
+                        let leftThis = parseInt(seeItems[i].style.left) - pointStep
+                        seeItems[i].style.left = leftThis + 'px'
+                    }
+                } else {
+                    clearInterval(itId)
+                    // Убираем z-index и сдвиг у элементов seeItems, кроме последнего
+                    for (let i = 0; i < seeItems.length - 1; i++) {
+                        seeItems[i].style.zIndex = 0
+                        seeItems[i].style.left = 0
+                    }
+                }
+            }, pointStepInterval)
+            actIt = point
+            document.querySelectorAll('.point').forEach((el) => { el.classList.remove('active-point') })
+            document.querySelectorAll('.point')[actIt].classList.add('active-point')
+        }
+
+        function movPrev(point) {
+            // Массив элементов нужных на первом плане
+            let seeItems = []
+            // let colich = actIt - point
+            for (let i = point; i <= actIt; i++) seeItems.push(items[i]) //собираем массив
+            // Задаем начальный сдвиг для всех элементов и z-index
+            for (let i = 0; i < seeItems.length; i++) {
+                seeItems[i].style.left = -pos * (seeItems.length - (i + 1)) + 'px'
+                seeItems[i].style.zIndex = items.length
+            }
+
+            let itId = setInterval(() => {
+                let checkPosition = parseInt(seeItems[0].style.left, 10)
+                // Если сдвиг крайнего не 0 - двигаем всех, иначе чистим тайер анимации
+                if (checkPosition < 0) {
+                    for (let i = 0; i < seeItems.length; i++) {
+                        seeItems[i].style.left = parseInt(seeItems[i].style.left) + pointStep + 'px'
+                    }
+                } else {
+                    clearInterval(itId)
+                    // Убираем z-index и сдвиг у элементов seeItems, кроме последнего
+                    for (let i = 1; i < seeItems.length; i++) {
+                        seeItems[i].style.zIndex = 0
+                        seeItems[i].style.left = 0
+                    }
+                }
+            }, pointStepInterval)
+            actIt = point
+            document.querySelectorAll('.point').forEach((el) => { el.classList.remove('active-point') })
+            document.querySelectorAll('.point')[actIt].classList.add('active-point')
+        }
+
+        function pointMov(point) {
+            if (point === actIt) {
+                null
+            } else {
+                point > actIt ? movNext(point) : movPrev(point)
+            }
+        }
+
+    </script>
+</body>
+
+</html>
